@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -16,10 +17,15 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mannetroll.cacheability.util.monitor.statistics.AbstractTimerInfoStats;
+import com.mannetroll.cacheability.util.monitor.statistics.TimerInfoStats;
+
 public class LogParser {
     private final static Logger logger = LoggerFactory.getLogger(LogParser.class);
+    private final static AbstractTimerInfoStats statistics = TimerInfoStats.getInstance();
     private static final String UTF_8 = "UTF-8";
     private static final String SEP = "|";
+    SimpleDateFormat accesslogDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 
     /*Log file feilds*/
     String clientHost = null;
@@ -43,21 +49,9 @@ public class LogParser {
         String date = " \\[([\\w:/]+\\s[+\\-]\\d{4})\\]"; // Date
         String request = " \"(.+?)\""; // request method and url
         String httpStatusCode = " (\\d{3})"; // HTTP code
-        String numOfBytes = " (\\d+|(.+?))"; // Number of bytes
-        String responseTime = " (\\d+|(.+?))"; // Response times
+        String numOfBytes = " (\\d+)"; // Number of bytes
+        String responseTime = " (\\d+)"; // Response times
         return clientHost + regex2 + user + date + request + httpStatusCode + numOfBytes + responseTime;
-    }
-
-    /**
-    * Converts any formated date to epoch
-    *@param dateFormmat : eg. yyy-MM-dd
-    *@param date : it should which fits dateFormmat criteria
-    *@return long : epoch representation
-    *@throws ParseException
-    */
-    public long convertTimetoEpoch(String dateFormat, String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-        return (sdf.parse(date)).getTime();
     }
 
     public void parse(File file) {
@@ -85,18 +79,23 @@ public class LogParser {
                     String verb = clientRequest.split(" ")[0];
                     String url = clientRequest.split(" ")[1];
                     String[] tmp = url.split("\\?");
-                    if (tmp.length > 0) {
+                    if (tmp.length > 1) {
                         String query = tmp[1];
                         Map<String, String> splitQuery = splitQuery(query);
                         String uri = tmp[0];
                         String[] segment = uri.split("/");
-                        if (segment.length > 0) {
+                        if (segment.length > 1) {
                             String key = segment[segment.length - 1];
                             key = verb + SEP + httpStatusCode + SEP + key;
                             for (String string : splitQuery.keySet()) {
                                 key += SEP + string + "=" + splitQuery.get(string);
                             }
-                            logger.info("key: " + key);
+                            //logger.info("key: " + key);
+                            long now = getNow(date);
+                            int chunk = getInteger(numOfBytes);
+                            double responsetime_ms = getInteger(responseTime) / 1000;
+                            statistics.addCall(key, responsetime_ms, chunk, now);
+                            statistics.addTotalTime(responsetime_ms, chunk, now);
                         }
                     }
                 }
@@ -107,7 +106,19 @@ public class LogParser {
         } finally {
 
         }
+    }
 
+    private Integer getInteger(String object) {
+        return Integer.parseInt(object.toString());
+    }
+
+    private long getNow(String timestamp) {
+        try {
+            Date parse = accesslogDateFormat.parse(timestamp);
+            return parse.getTime();
+        } catch (ParseException e) {
+            return System.currentTimeMillis();
+        }
     }
 
     public Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
@@ -115,9 +126,11 @@ public class LogParser {
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            String param = URLDecoder.decode(pair.substring(0, idx), UTF_8);
-            if (!"consumerId".equals(param)) {
-                query_pairs.put(param, URLDecoder.decode(pair.substring(idx + 1), UTF_8));
+            if (idx > 0) {
+                String param = URLDecoder.decode(pair.substring(0, idx), UTF_8);
+                if (!"consumerId".equals(param)) {
+                    query_pairs.put(param, URLDecoder.decode(pair.substring(idx + 1), UTF_8));
+                }
             }
         }
         return query_pairs;
