@@ -237,6 +237,13 @@ public abstract class AbstractTimerInfoStats implements Serializable {
     }
 
     /**
+     * @return clone
+     */
+    public synchronized Map<String, CacheInfoItem> getCacheData() {
+        return (Map<String, CacheInfoItem>) base2.clone();
+    }
+
+    /**
      * @return size
      */
     public synchronized int getStatDataSize() {

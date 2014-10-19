@@ -18,6 +18,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.mannetroll.cacheability.util.monitor.statistics.CacheInfoItem;
 import com.mannetroll.cacheability.util.monitor.statistics.TimerInfoItem;
 import com.mannetroll.cacheability.util.monitor.statistics.TimerInfoMemory;
 import com.mannetroll.cacheability.util.monitor.statistics.TimerInfoStats;
@@ -72,7 +73,7 @@ public class TimerInfoServlet extends HttpServlet {
         if (request.getParameter("freq") != null) {
             header(NAME + " - Frequency - " + datestr, false, out);
             baseurl += "?freq=Frequency";
-            frequencyTable(out, tistat, "X", null, sort, baseurl);
+            frequencyTable(out, tistat, sort, baseurl);
             footer(out);
         } else if (request.getParameter("mem") != null) {
             header(NAME + " - JVM Memory - " + datestr, true, out);
@@ -449,8 +450,8 @@ public class TimerInfoServlet extends HttpServlet {
         }
     }
 
-    private void frequencyTable(ServletOutputStream out, TimerInfoStats stats, String jump1, String jump2, String sort,
-            String baseurl) throws IOException {
+    private void frequencyTable(ServletOutputStream out, TimerInfoStats stats, String sort, String baseurl)
+            throws IOException {
         Set<TimerInfoItem> treeSet;
         if ("perf".equalsIgnoreCase(sort)) {
             treeSet = new TreeSet<TimerInfoItem>(new AverageComparator());
@@ -481,9 +482,9 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<th>Rate (#/s)</th>");
         out.println("<th>Td99 [s]</th>");
         out.println("<th>Payload [KB]</th>");
-        out.println("<th>Max [KB]</th>");
         out.println("<th>Bitrate [KB/s]</th>");
-        out.println("<th>Max [KB/s]</th>");
+        out.println("<th>Cachehits</th>");
+        out.println("<th>Cachemiss</th>");
         out.println("<th><a href='" + baseurl + "&sort=uri'>URI</a></th></tr>");
         NumberFormat nf0 = NumberFormat.getInstance();
         nf0.setMaximumFractionDigits(0);
@@ -501,13 +502,8 @@ public class TimerInfoServlet extends HttpServlet {
         //frequencyTable
         for (TimerInfoItem item : treeSet) {
             String key = item.getKey();
-            if (jump1 != null && key.startsWith(jump1)) {
-                continue;
-            }
-            if (jump2 != null && key.startsWith(jump2)) {
-                continue;
-            }
             double[] freqDataArray = item.getFreqDataArray(stats.getTotalTotalTime(), 1d, totaltime);
+            CacheInfoItem cacheInfoItem = stats.getCacheData().get(key);
             if (freqDataArray[0] != 0) {
                 out.println("<tr align='right'>");
                 out.println("<td>" + nf0.format(loop++) + "</td>");
@@ -523,14 +519,14 @@ public class TimerInfoServlet extends HttpServlet {
                 if (key.contains("|200|") || key.equals("TOTAL")) {
                     out.println("<td>" + nf2.format(freqDataArray[9]) + "</td>");
                     out.println("<td bgcolor='#eee'>" + nf1.format(freqDataArray[10] / 1024) + "</td>");
-                    out.println("<td>" + nf1.format(freqDataArray[11] / 1024) + "</td>");
                     out.println("<td bgcolor='#eee'>" + nf1.format(freqDataArray[12] / 1024) + "</td>");
-                    out.println("<td>" + nf1.format(freqDataArray[13] / 1024) + "</td>");
+                    out.println("<td>" + cacheInfoItem.getCachehit5() + "</td>");
+                    out.println("<td>" + cacheInfoItem.getCachemiss5() + "</td>");
                 } else {
                     out.println("<td>-</td>");
                     out.println("<td bgcolor='#eee'>-</td>");
-                    out.println("<td>-</td>");
                     out.println("<td bgcolor='#eee'>-</td>");
+                    out.println("<td>-</td>");
                     out.println("<td>-</td>");
                 }
                 out.println("<td style='border-right:none' align='left'>" + key + "</td>");
