@@ -19,8 +19,10 @@ public abstract class AbstractTimerInfoStats implements Serializable {
     private final long serverStart = System.currentTimeMillis();
     private long createTime = 0;
     private long lastTime = 0;
-    private HashMap<String, TimerInfoItem> base = new HashMap<String, TimerInfoItem>();
-    private Map<String, TimerInfoItem> calls = Collections.synchronizedMap(base);
+    private HashMap<String, TimerInfoItem> base1 = new HashMap<String, TimerInfoItem>();
+    private HashMap<String, CacheInfoItem> base2 = new HashMap<String, CacheInfoItem>();
+    private Map<String, TimerInfoItem> calls = Collections.synchronizedMap(base1);
+    private Map<String, CacheInfoItem> cache = Collections.synchronizedMap(base2);
     private boolean addQueryToKey = false;
     private long notModified = 0;
     private long etagCached = 0;
@@ -130,6 +132,20 @@ public abstract class AbstractTimerInfoStats implements Serializable {
 
     public void addCall(String key, double timeSlice, int chunk, long now) {
         addCallLocal(key, timeSlice, chunk, now);
+        addCacheLocal(key, timeSlice, chunk, now);
+    }
+
+    private void addCacheLocal(String key, double timeSlice, int chunk, long now) {
+        if (createTime == 0) {
+            createTime = now;
+        }
+        lastTime = now;
+        CacheInfoItem item = (CacheInfoItem) cache.get(key);
+        if (item == null) {
+            item = new CacheInfoItem(key);
+            cache.put(key, item);
+        }
+        item.addCall(timeSlice, chunk, now);
     }
 
     private synchronized void addCallLocal(String key, double timeSlice, int chunk, long now) {
@@ -151,8 +167,8 @@ public abstract class AbstractTimerInfoStats implements Serializable {
     public synchronized void clear() {
         memoryInfo.clear();
         calls.clear();
-        base = new HashMap<String, TimerInfoItem>();
-        calls = Collections.synchronizedMap(base);
+        base1 = new HashMap<String, TimerInfoItem>();
+        calls = Collections.synchronizedMap(base1);
         calls.put(TOTAL, new TimerInfoItem(TOTAL));
         createTime = 0;
         lastTime = createTime;
@@ -220,7 +236,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
      * @return clone
      */
     public synchronized Map<String, TimerInfoItem> getStatData() {
-        return (Map<String, TimerInfoItem>) base.clone();
+        return (Map<String, TimerInfoItem>) base1.clone();
     }
 
     /**
