@@ -6,10 +6,19 @@ public class CacheInfoItem {
     private long TTL5 = 301 * 1000;
     private int cachehit5 = 0;
     private int cachemiss5 = 0;
+    //
+    private long lastcall15;
+    private long TTL15 = 1501 * 1000;
+    private int cachehit15 = 0;
+    private int cachemiss15 = 0;
 
     public CacheInfoItem(String key, long now) {
         this.key = key;
         lastcall5 = now;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public void addCacheCall(double timeSlice, int chunk, long now) {
@@ -19,18 +28,21 @@ public class CacheInfoItem {
             cachemiss5++;
             lastcall5 = now;
         }
+        if ((now - lastcall15) < TTL15) {
+            cachehit15++;
+        } else {
+            cachemiss15++;
+            lastcall15 = now;
+        }
     }
 
-    public String getKey() {
-        return key;
+    public double getCacheability5() {
+        double total = cachehit5 + cachemiss5;
+        return (total > 0 ? 100d * cachehit5 / total : 0);
     }
 
-    public int getCachehit5() {
-        return cachehit5;
+    public double getCacheability15() {
+        double total = cachehit15 + cachemiss15;
+        return (total > 0 ? 100d * cachehit15 / total : 0);
     }
-
-    public int getCachemiss5() {
-        return cachemiss5;
-    }
-
 }

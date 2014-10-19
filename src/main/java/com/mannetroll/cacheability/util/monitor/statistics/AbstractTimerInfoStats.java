@@ -37,6 +37,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
 
     public AbstractTimerInfoStats() {
         calls.put(TOTAL, new TimerInfoItem(TOTAL));
+        cache.put(TOTAL, new CacheInfoItem(TOTAL, serverStart));
     }
 
     /**
@@ -167,6 +168,9 @@ public abstract class AbstractTimerInfoStats implements Serializable {
         base1 = new HashMap<String, TimerInfoItem>();
         calls = Collections.synchronizedMap(base1);
         calls.put(TOTAL, new TimerInfoItem(TOTAL));
+        base2 = new HashMap<String, CacheInfoItem>();
+        cache = Collections.synchronizedMap(base2);
+        cache.put(TOTAL, new CacheInfoItem(TOTAL, serverStart));
         createTime = 0;
         lastTime = createTime;
         rtimes = new int[RESP_SIZE];

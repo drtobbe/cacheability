@@ -483,8 +483,8 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<th>Td99 [s]</th>");
         out.println("<th>Payload [KB]</th>");
         out.println("<th>Bitrate [KB/s]</th>");
-        out.println("<th>Cachehits</th>");
-        out.println("<th>Cachemiss</th>");
+        out.println("<th>TTL5 [%]</th>");
+        out.println("<th>TTL15 [%]</th>");
         out.println("<th><a href='" + baseurl + "&sort=uri'>URI</a></th></tr>");
         NumberFormat nf0 = NumberFormat.getInstance();
         nf0.setMaximumFractionDigits(0);
@@ -520,8 +520,8 @@ public class TimerInfoServlet extends HttpServlet {
                     out.println("<td>" + nf2.format(freqDataArray[9]) + "</td>");
                     out.println("<td bgcolor='#eee'>" + nf1.format(freqDataArray[10] / 1024) + "</td>");
                     out.println("<td bgcolor='#eee'>" + nf1.format(freqDataArray[12] / 1024) + "</td>");
-                    out.println("<td>" + cacheInfoItem.getCachehit5() + "</td>");
-                    out.println("<td>" + cacheInfoItem.getCachemiss5() + "</td>");
+                    out.println("<td>" + nf1.format(cacheInfoItem.getCacheability5()) + "</td>");
+                    out.println("<td>" + nf1.format(cacheInfoItem.getCacheability15()) + "</td>");
                 } else {
                     out.println("<td>-</td>");
                     out.println("<td bgcolor='#eee'>-</td>");
