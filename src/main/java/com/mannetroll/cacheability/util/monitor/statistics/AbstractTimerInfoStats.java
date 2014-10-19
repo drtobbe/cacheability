@@ -129,21 +129,22 @@ public abstract class AbstractTimerInfoStats implements Serializable {
 
     public void addCall(String key, double timeSlice, long now) {
         addCallLocal(key, timeSlice, 0, now);
-        addCacheLocal(key, timeSlice, 0, now);
+        addCacheCallLocal(key, timeSlice, 0, now);
     }
 
     public void addCall(String key, double timeSlice, int chunk, long now) {
         addCallLocal(key, timeSlice, chunk, now);
-        addCacheLocal(key, timeSlice, chunk, now);
+        addCacheCallLocal(key, timeSlice, chunk, now);
     }
 
-    private void addCacheLocal(String key, double timeSlice, int chunk, long now) {
+    private void addCacheCallLocal(String key, double timeSlice, int chunk, long now) {
         CacheInfoItem item = (CacheInfoItem) cache.get(key);
         if (item == null) {
             item = new CacheInfoItem(key);
             cache.put(key, item);
         }
-        item.addCacheCall(timeSlice, chunk, now);
+        CacheInfoItem cacheTotal = cache.get(TOTAL);
+        item.addCacheCall(timeSlice, chunk, now, cacheTotal);
     }
 
     private synchronized void addCallLocal(String key, double timeSlice, int chunk, long now) {

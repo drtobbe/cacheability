@@ -20,7 +20,7 @@ public class CacheInfoItem {
         return key;
     }
 
-    public void addCacheCall(double timeSlice, int chunk, long now) {
+    public void addCacheCall(double timeSlice, int chunk, long now, CacheInfoItem cacheTotal) {
         if (lastcall5 == 0) {
             lastcall5 = now;
             lastcall15 = now;
@@ -29,16 +29,36 @@ public class CacheInfoItem {
         }
         if ((now - lastcall5) < TTL5) {
             cachehit5++;
+            cacheTotal.tickCachehit5();
         } else {
             cachemiss5++;
+            cacheTotal.tickCachemiss5();
             lastcall5 = now;
         }
         if ((now - lastcall15) < TTL15) {
             cachehit15++;
+            cacheTotal.tickCachehit15();
         } else {
             cachemiss15++;
+            cacheTotal.tickCachemiss15();
             lastcall15 = now;
         }
+    }
+
+    private void tickCachemiss5() {
+        cachemiss5++;
+    }
+
+    private void tickCachehit5() {
+        cachehit5++;
+    }
+
+    private void tickCachemiss15() {
+        cachemiss15++;
+    }
+
+    private void tickCachehit15() {
+        cachehit15++;
     }
 
     public double getCacheability5() {
