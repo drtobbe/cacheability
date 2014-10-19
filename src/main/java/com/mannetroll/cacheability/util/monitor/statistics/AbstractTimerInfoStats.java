@@ -128,6 +128,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
 
     public void addCall(String key, double timeSlice, long now) {
         addCallLocal(key, timeSlice, 0, now);
+        addCacheLocal(key, timeSlice, 0, now);
     }
 
     public void addCall(String key, double timeSlice, int chunk, long now) {
@@ -142,7 +143,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
         lastTime = now;
         CacheInfoItem item = (CacheInfoItem) cache.get(key);
         if (item == null) {
-            item = new CacheInfoItem(key);
+            item = new CacheInfoItem(key, now);
             cache.put(key, item);
         }
         item.addCall(timeSlice, chunk, now);
