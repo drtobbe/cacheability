@@ -100,7 +100,7 @@ public class LogParser {
                                 long now = getNow(date);
                                 int chunk = getInteger(numOfBytes);
                                 double responsetime_ms = getInteger(responseTime) / 1000;
-                                if ("200".equals(httpStatusCode)) {
+                                if ("200".equals(httpStatusCode) && "GET".equals(verb)) {
                                     statistics.addCall(key, responsetime_ms, chunk, now);
                                     statistics.addTotalTime(responsetime_ms, chunk, now);
                                 }
