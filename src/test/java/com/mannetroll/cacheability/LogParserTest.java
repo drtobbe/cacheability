@@ -10,7 +10,8 @@ public class LogParserTest {
     public void test() {
         LogParser logParser = new LogParser();
         //File file = new File("src/test/resources/test.log");
-        File file = new File("/Users/drtobbe/Desktop/cacheability/access_findNearestByAddress.log");
+        //File file = new File("/Users/drtobbe/Desktop/cacheability/access_findNearestByAddress.log");
+        File file = new File("/Users/drtobbe/Desktop/cacheability/access_all.log");
         logParser.parse(file);
     }
 

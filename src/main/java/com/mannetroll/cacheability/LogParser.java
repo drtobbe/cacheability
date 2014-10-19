@@ -80,27 +80,30 @@ public class LogParser {
                     numOfBytes = accessLogEntryMatcher.group(7);
                     responseTime = accessLogEntryMatcher.group(8);
                     //
-                    String verb = clientRequest.split(" ")[0];
-                    String url = clientRequest.split(" ")[1];
-                    String[] tmp = url.split("\\?");
-                    if (tmp.length > 1) {
-                        String query = tmp[1];
-                        Map<String, String> splitQuery = splitQuery(query);
-                        String uri = tmp[0];
-                        String[] segment = uri.split("/");
-                        if (segment.length > 1) {
-                            String key = segment[segment.length - 1];
-                            key = verb + SEP + httpStatusCode + SEP + key;
-                            for (String string : splitQuery.keySet()) {
-                                key += SEP + string + "=" + splitQuery.get(string);
-                            }
-                            //logger.info("key: " + key);
-                            long now = getNow(date);
-                            int chunk = getInteger(numOfBytes);
-                            double responsetime_ms = getInteger(responseTime) / 1000;
-                            if ("200".equals(httpStatusCode)) {
-                                statistics.addCall(key, responsetime_ms, chunk, now);
-                                statistics.addTotalTime(responsetime_ms, chunk, now);
+                    String[] split = clientRequest.split(" ");
+                    if (split.length > 1) {
+                        String verb = split[0];
+                        String url = split[1];
+                        String[] tmp = url.split("\\?");
+                        if (tmp.length > 1) {
+                            String query = tmp[1];
+                            Map<String, String> splitQuery = splitQuery(query);
+                            String uri = tmp[0];
+                            String[] segment = uri.split("/");
+                            if (segment.length > 1) {
+                                String key = segment[segment.length - 1];
+                                key = verb + SEP + httpStatusCode + SEP + key;
+                                for (String string : splitQuery.keySet()) {
+                                    key += SEP + string + "=" + splitQuery.get(string);
+                                }
+                                //logger.info("key: " + key);
+                                long now = getNow(date);
+                                int chunk = getInteger(numOfBytes);
+                                double responsetime_ms = getInteger(responseTime) / 1000;
+                                if ("200".equals(httpStatusCode)) {
+                                    statistics.addCall(key, responsetime_ms, chunk, now);
+                                    statistics.addTotalTime(responsetime_ms, chunk, now);
+                                }
                             }
                         }
                     }
