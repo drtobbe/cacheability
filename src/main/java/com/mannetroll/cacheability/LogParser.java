@@ -48,9 +48,9 @@ public class LogParser {
         String user = " (\\S+)"; // -
         String date = " \\[([\\w:/]+\\s[+\\-]\\d{4})\\]"; // Date
         String request = " \"(.+?)\""; // request method and url
-        String httpStatusCode = " (\\d{3})"; // HTTP code
-        String numOfBytes = " (\\d+)"; // Number of bytes
-        String responseTime = " (\\d+)"; // Response times
+        String httpStatusCode = " (\\d{3}|-)"; // HTTP code
+        String numOfBytes = " (\\d+|-)"; // Number of bytes
+        String responseTime = " (\\d+|-)"; // Response times
         return clientHost + regex2 + user + date + request + httpStatusCode + numOfBytes + responseTime;
     }
 
@@ -65,10 +65,14 @@ public class LogParser {
             Matcher accessLogEntryMatcher;
             while ((line = bufferReader.readLine()) != null) {
                 index++;
+                if ((index % 1000) == 0) {
+                    logger.info("index: " + index);
+                }
                 accessLogEntryMatcher = accessLogPattern.matcher(line);
                 if (!accessLogEntryMatcher.matches()) {
-                    System.out.println("" + index + " : couldn't be parsed");
-                    continue;
+                    System.out.println("err: " + index + " : " + line);
+                    break;
+                    //continue;
                 } else {
                     date = accessLogEntryMatcher.group(4);
                     clientRequest = accessLogEntryMatcher.group(5);
@@ -94,8 +98,10 @@ public class LogParser {
                             long now = getNow(date);
                             int chunk = getInteger(numOfBytes);
                             double responsetime_ms = getInteger(responseTime) / 1000;
-                            statistics.addCall(key, responsetime_ms, chunk, now);
-                            statistics.addTotalTime(responsetime_ms, chunk, now);
+                            if ("200".equals(httpStatusCode)) {
+                                statistics.addCall(key, responsetime_ms, chunk, now);
+                                statistics.addTotalTime(responsetime_ms, chunk, now);
+                            }
                         }
                     }
                 }
@@ -109,7 +115,11 @@ public class LogParser {
     }
 
     private Integer getInteger(String object) {
-        return Integer.parseInt(object.toString());
+        try {
+            return Integer.parseInt(object.toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private long getNow(String timestamp) {
