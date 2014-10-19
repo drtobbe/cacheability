@@ -196,6 +196,7 @@ public class TimerInfoServlet extends HttpServlet {
         out.println(createRow("Average (S)", E + tistat.getTotalAverage()));
         out.println(createRow("Average (M)", E + tistat.getAverageM1()));
         out.println(createRow("Payload [KB]", E + tistat.getPaylodAverage() / 1024));
+        out.println(createRow("Total Cache Payload [MB]", E + tistat.getTotalPaylod() / 1024 / 1024));
         out.println(createRow("Bitrate [KB/s]", E + tistat.getBitrateAverage() / 1024));
         out.println(createRow("Median", E + tistat.getMedian()));
         out.println(createRow("Threadload (A)", E + threadload));
