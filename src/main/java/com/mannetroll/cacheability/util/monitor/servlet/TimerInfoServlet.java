@@ -208,13 +208,13 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<input class=\"btext\" type=\"submit\" name=\"stat\" value=\"Performance\"/>");
         out.println("<input class=\"btext\" type=\"submit\" name=\"reload\" value=\"Autoreload\"/>");
         //out.println("<input class=\"btext\" type=\"submit\" name=\"mem\" value=\"Memory\"/>");
-        //out.println("<input class=\"btext\" type=\"submit\" name=\"freq\" value=\"Frequency\"/>");
+        out.println("<input class=\"btext\" type=\"submit\" name=\"freq\" value=\"Frequency\"/>");
         //out.println("<input class=\"btext\" type=\"submit\" name=\"statxml\" value=\"Perf XML\"/>");
-        if (tistat.isAddQueryToKey()) {
-            out.println("<input class=\"btext\" type=\"submit\" name=\"qoff\" value=\"Query On\"/>");
-        } else {
-            out.println("<input class=\"btext\" type=\"submit\" name=\"qon\" value=\"Query Off\"/>");
-        }
+        //if (tistat.isAddQueryToKey()) {
+        //    out.println("<input class=\"btext\" type=\"submit\" name=\"qoff\" value=\"Query On\"/>");
+        //} else {
+        //    out.println("<input class=\"btext\" type=\"submit\" name=\"qon\" value=\"Query Off\"/>");
+        //}
         out.println("<input class=\"btext\" type=\"submit\" name=\"clear\" value=\"Clear\"/>");
         out.println("</form></td>");
 
