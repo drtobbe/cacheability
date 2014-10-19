@@ -32,10 +32,8 @@ public class ApacheLogParser {
         String regex5 = " \"(.+?)\""; // request method and url
         String regex6 = " (\\d{3})"; // HTTP code
         String regex7 = " (\\d+|(.+?))"; // Number of bytes
-        String regex8 = " \"([^\"]+|(.+?))\""; // Referer
-        String regex9 = " \"([^\"]+|(.+?))\""; // Agent
-
-        return regex1 + regex2 + regex3 + regex4 + regex5 + regex6 + regex7 + regex8 + regex9;
+        String regex8 = " (\\d+|(.+?))"; // Response times
+        return regex1 + regex2 + regex3 + regex4 + regex5 + regex6 + regex7 + regex8;
     }
 
     /**
@@ -46,18 +44,14 @@ public class ApacheLogParser {
     */
     public HashMap<Integer, String> readUrlsList(String filePath) throws IOException {
         HashMap<Integer, String> urls = new HashMap<Integer, String>();
-
         BufferedReader bufferReader = new BufferedReader(new FileReader(filePath));
-
         String line = "";
         int index = 0;
-
         /*put the URLS to be filtered in HASH MAP*/
-        while ((line = bufferReader.readLine()) != null)
+        while ((line = bufferReader.readLine()) != null) {
             urls.put(index++, line);
-
+        }
         bufferReader.close();
-
         return urls;
     }
 
@@ -70,7 +64,6 @@ public class ApacheLogParser {
     */
     public long convertTimetoEpoch(String dateFormat, String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-
         return (sdf.parse(date)).getTime();
     }
 
