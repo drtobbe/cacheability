@@ -9,10 +9,9 @@ public class CacheInfoItem {
         lastcall = now;
     }
 
-    public void addCall(double timeSlice, int chunk, long now) {
-        long age = lastcall - now;
+    public void addCacheCall(double timeSlice, int chunk, long now) {
+        long age = now - lastcall;
         System.out.println("age: " + age + " - " + key);
-        lastcall = now;
     }
 
 }
