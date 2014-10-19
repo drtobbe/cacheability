@@ -14,6 +14,7 @@ public class TimerInfoStatsTest {
 
     @Test
     public void testStatistic() {
+        statistics.clear();
         long responsetime_ms = 500;
         int chunk = 1024;
         String key = "START";
