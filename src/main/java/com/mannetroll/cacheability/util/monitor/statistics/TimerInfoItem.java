@@ -37,7 +37,7 @@ public class TimerInfoItem {
         long diff = now - this.lastTime;
         if (diff > 0) {
             frequency += diff;
-            frequency2 += frequency * frequency;
+            frequency2 += diff * diff;
             minFrequency = Math.min(minFrequency, diff);
             maxFrequency = Math.max(maxFrequency, diff);
         }
@@ -209,11 +209,11 @@ public class TimerInfoItem {
     public double[] getFreqDataArray(double totalTotalTime, double threadload, float elapsedtime) {
         double[] result = new double[14];
         result[0] = nofCalls;
-        result[1] = frequency;
-        result[2] = minFrequency;
-        result[3] = getMeanFrequency();
-        result[4] = maxFrequency;
-        result[5] = getFrequencyStandardDeviation();
+        result[1] = frequency / 1000;
+        result[2] = minFrequency / 1000;
+        result[3] = getMeanFrequency() / 1000;
+        result[4] = maxFrequency / 1000;
+        result[5] = getFrequencyStandardDeviation() / 1000;
         result[6] = (getMeanTime() > 0 ? 1000D * Math.max(1D, threadload) / getMeanTime() : 0D);
         result[7] = 100D * (totalTime / Math.max(totalTotalTime, Double.MIN_VALUE));
         result[8] = (elapsedtime > 0 ? nofCalls / Math.max(elapsedtime, Double.MIN_VALUE) : 0D);

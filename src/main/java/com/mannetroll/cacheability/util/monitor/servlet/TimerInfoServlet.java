@@ -473,10 +473,10 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<th>No</th>");
         out.println("<th># Calls</th>");
         out.println("<th>Total (s)</th>");
-        out.println("<th>Min (ms)</th>");
-        out.println("<th>Frequency (ms)</th>");
-        out.println("<th>Max (ms)</th>");
-        out.println("<th>Std (ms)</th>");
+        out.println("<th>Min (s)</th>");
+        out.println("<th>Frequency (s)</th>");
+        out.println("<th>Max (s)</th>");
+        out.println("<th>Std (s)</th>");
         out.println("<th><a href='" + baseurl + "&sort=perf'>Perf (#/s)</a></th>");
         out.println("<th><a href='" + baseurl + "&sort=time'>Total (%)</a></th>");
         out.println("<th>Rate (#/s)</th>");
