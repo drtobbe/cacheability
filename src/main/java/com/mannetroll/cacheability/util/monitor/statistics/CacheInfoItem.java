@@ -2,19 +2,18 @@ package com.mannetroll.cacheability.util.monitor.statistics;
 
 public class CacheInfoItem {
     private final String key;
-    private long lastcall5;
+    private long lastcall5 = 0;
     private long TTL5 = 301 * 1000;
     private int cachehit5 = 0;
     private int cachemiss5 = 0;
     //
-    private long lastcall15;
+    private long lastcall15 = 0;
     private long TTL15 = 1501 * 1000;
     private int cachehit15 = 0;
     private int cachemiss15 = 0;
 
-    public CacheInfoItem(String key, long now) {
+    public CacheInfoItem(String key) {
         this.key = key;
-        lastcall5 = now;
     }
 
     public String getKey() {
@@ -22,6 +21,12 @@ public class CacheInfoItem {
     }
 
     public void addCacheCall(double timeSlice, int chunk, long now) {
+        if (lastcall5 == 0) {
+            lastcall5 = now;
+            lastcall15 = now;
+            //first access call
+            return;
+        }
         if ((now - lastcall5) < TTL5) {
             cachehit5++;
         } else {

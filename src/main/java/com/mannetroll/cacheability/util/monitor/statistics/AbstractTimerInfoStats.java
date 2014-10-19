@@ -37,7 +37,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
 
     public AbstractTimerInfoStats() {
         calls.put(TOTAL, new TimerInfoItem(TOTAL));
-        cache.put(TOTAL, new CacheInfoItem(TOTAL, serverStart));
+        cache.put(TOTAL, new CacheInfoItem(TOTAL));
     }
 
     /**
@@ -140,7 +140,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
     private void addCacheLocal(String key, double timeSlice, int chunk, long now) {
         CacheInfoItem item = (CacheInfoItem) cache.get(key);
         if (item == null) {
-            item = new CacheInfoItem(key, now);
+            item = new CacheInfoItem(key);
             cache.put(key, item);
         }
         item.addCacheCall(timeSlice, chunk, now);
@@ -170,7 +170,7 @@ public abstract class AbstractTimerInfoStats implements Serializable {
         calls.put(TOTAL, new TimerInfoItem(TOTAL));
         base2 = new HashMap<String, CacheInfoItem>();
         cache = Collections.synchronizedMap(base2);
-        cache.put(TOTAL, new CacheInfoItem(TOTAL, serverStart));
+        cache.put(TOTAL, new CacheInfoItem(TOTAL));
         createTime = 0;
         lastTime = createTime;
         rtimes = new int[RESP_SIZE];

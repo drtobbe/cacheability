@@ -483,8 +483,8 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<th>Td99 [s]</th>");
         out.println("<th>Payload [KB]</th>");
         out.println("<th>Bitrate [KB/s]</th>");
-        out.println("<th>TTL5 [%]</th>");
-        out.println("<th>TTL15 [%]</th>");
+        out.println("<th>Cacheability TTL5 [%]</th>");
+        out.println("<th>Cacheability TTL15 [%]</th>");
         out.println("<th><a href='" + baseurl + "&sort=uri'>URI</a></th></tr>");
         NumberFormat nf0 = NumberFormat.getInstance();
         nf0.setMaximumFractionDigits(0);
