@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -71,9 +72,16 @@ public class TimerInfoServlet extends HttpServlet {
         String sort = request.getParameter("sort");
         String baseurl = request.getRequestURI();
         if (request.getParameter("freq") != null) {
+            NumberFormat nf0 = NumberFormat.getInstance();
+            nf0.setMaximumFractionDigits(0);
+            nf0.setMinimumFractionDigits(0);
             header(NAME + " - Frequency - " + datestr, false, out);
             baseurl += "?freq=Frequency";
             frequencyTable(out, tistat, sort, baseurl);
+            String title1 = " Response " + nf0.format(tistat.getAverage()) + " [ms]";
+            pixelPlot(out, tistat.getResponseTimes(), 0, "red", 55, title1);
+            String title2 = "Bitrate " + nf0.format(tistat.getBitrateAverage() / 1024D) + " [KB/s]";
+            pixelPlot(out, tistat.getRatesSizes(), 1, "blue", 270, title2);
             footer(out);
         } else if (request.getParameter("mem") != null) {
             header(NAME + " - JVM Memory - " + datestr, true, out);
@@ -474,7 +482,7 @@ public class TimerInfoServlet extends HttpServlet {
         out.println("<th># Calls</th>");
         out.println("<th>Total (s)</th>");
         out.println("<th>Min (s)</th>");
-        out.println("<th>Frequency (s)</th>");
+        out.println("<th>1/Frequency (s)</th>");
         out.println("<th>Max (s)</th>");
         out.println("<th>Std (s)</th>");
         out.println("<th><a href='" + baseurl + "&sort=perf'>Perf (#/s)</a></th>");
@@ -500,10 +508,11 @@ public class TimerInfoServlet extends HttpServlet {
         nf3.setMinimumFractionDigits(3);
         long loop = 1;
         //frequencyTable
+        Map<String, CacheInfoItem> clone = stats.getCacheData();
         for (TimerInfoItem item : treeSet) {
             String key = item.getKey();
             double[] freqDataArray = item.getFreqDataArray(stats.getTotalTotalTime(), 1d, totaltime);
-            CacheInfoItem cacheInfoItem = stats.getCacheData().get(key);
+            CacheInfoItem cacheInfoItem = clone.get(key);
             if (freqDataArray[0] != 0) {
                 out.println("<tr align='right'>");
                 out.println("<td>" + nf0.format(loop++) + "</td>");
