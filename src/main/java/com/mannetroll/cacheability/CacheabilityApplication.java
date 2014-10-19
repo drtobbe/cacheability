@@ -25,7 +25,8 @@ public class CacheabilityApplication extends SpringBootServletInitializer {
         logger.info("SpringApplication done");
 
         LogParser logParser = new LogParser();
-        File file = new File("/Users/drtobbe/Desktop/cacheability/access_findNearestByAddress.log");
+        //File file = new File("/Users/drtobbe/Desktop/cacheability/access_findNearestByAddress.log");
+        File file = new File("/Users/drtobbe/Desktop/cacheability/access_all.log");
         logParser.parse(file);
 
         logger.info("Done");
