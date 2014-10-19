@@ -23,11 +23,14 @@ public class CacheabilityApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         logger.info("Start");
-
+        SpringApplication.run(CacheabilityApplication.class, args);
+        logger.info("SpringApplication done");
+        
+        
         //statistics.addCall(key, responsetime_ms, chunk, now);
         //statistics.addTotalTime(responsetime_ms, chunk, now);
 
-        SpringApplication.run(CacheabilityApplication.class, args);
+        
         logger.info("Done");
     }
 
